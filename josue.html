@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Josué 1:9 — Esfuérzate y Sé Valiente</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --black:   #07080D;
+  --navy:    #0A0F1E;
+  --deep:    #0D1535;
+  --blue:    #1A3A6E;
+  --mid:     #2563A8;
+  --sky:     #3B82C4;
+  --light:   #93C5E8;
+  --white:   #EEF4FF;
+  --gold:    #C8A96E;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow-x: hidden;
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── SOUND CONTROL ── */
+#soundBtn {
+  position: fixed;
+  top: 18px; right: 20px;
+  z-index: 100;
+  background: rgba(10,15,30,0.7);
+  border: 1px solid rgba(59,130,196,0.3);
+  color: var(--light);
+  font-size: 18px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s, transform 0.2s;
+}
+#soundBtn:hover { border-color: var(--sky); transform: scale(1.08); }
+
+/* ── SCENE: CANVAS FILLS SCREEN ── */
+#scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ── SCROLL CONTAINER ── */
+.scroll-wrap {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px 80px;
+  pointer-events: none;
+}
+
+/* ── VERSE CARD ── */
+.verse-card {
+  pointer-events: auto;
+  max-width: 620px;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: rise 1.6s ease 0.8s forwards;
+}
+
+.reference {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 28px;
+  opacity: 0.8;
+}
+
+.verse-main {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 6vw, 50px);
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+
+.verse-main em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.verse-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--light);
+  line-height: 1.6;
+  margin-bottom: 40px;
+  opacity: 0.85;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+.divider-line {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59,130,196,0.5));
+}
+.divider-line.right {
+  background: linear-gradient(90deg, rgba(59,130,196,0.5), transparent);
+}
+.divider-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sky); opacity: 0.7; }
+
+/* ── SCENE CAPTION ── */
+.scene-caption {
+  background: rgba(7,8,13,0.55);
+  border: 1px solid rgba(37,99,168,0.25);
+  border-radius: 16px;
+  padding: 28px 32px;
+  backdrop-filter: blur(12px);
+  max-width: 500px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: rise 1.4s ease 1.6s forwards;
+}
+
+.caption-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+
+.caption-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 2.5vw, 19px);
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--white);
+  opacity: 0.9;
+}
+
+.caption-text strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verse-card, .scene-caption { animation: none; opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<button id="soundBtn" title="Activar / silenciar sonido">🔇</button>
+<canvas id="scene"></canvas>
+
+<div class="scroll-wrap">
+  <div class="verse-card">
+    <p class="reference">Josué 1 : 9</p>
+    <h1 class="verse-main">
+      <em>Esfuérzate</em> y sé valiente.
+    </h1>
+    <p class="verse-sub">
+      No temas ni te desmayes, porque Jehová tu Dios<br>
+      estará contigo en dondequiera que vayas.
+    </p>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-dot"></div>
+      <div class="divider-line right"></div>
+    </div>
+
+    <div class="scene-caption">
+      <p class="caption-eyebrow">✦ La escena de hoy ✦</p>
+      <p class="caption-text">
+        Son las cinco de la mañana. El cuarto está oscuro.<br>
+        Hay una decisión que llevas semanas posponiendo —<br>
+        una conversación difícil, un primer paso, una puerta que da miedo abrir.<br><br>
+        Te levantas de todas formas.<br>
+        No porque no tengas miedo.<br>
+        Sino porque <strong>alguien más grande que el miedo</strong> va contigo.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CANVAS SCENE: night sky + rising light + floating particles ──
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+
+let W, H, stars = [], particles = [], t = 0;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  initStars();
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 180; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H * 0.75,
+      r: Math.random() * 1.4 + 0.3,
+      a: Math.random(),
+      speed: Math.random() * 0.008 + 0.003,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function spawnParticle() {
+  if (particles.length > 60) return;
+  // light motes rising from bottom horizon
+  const x = W * 0.35 + (Math.random() - 0.5) * W * 0.6;
+  particles.push({
+    x, y: H * 0.68 + Math.random() * H * 0.15,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: -(Math.random() * 0.6 + 0.2),
+    r: Math.random() * 2 + 0.5,
+    a: Math.random() * 0.5 + 0.2,
+    life: 1
+  });
+}
+
+function draw() {
+  t += 0.012;
+  ctx.clearRect(0, 0, W, H);
+
+  // ── Sky gradient: deep black-navy top → blue horizon ──
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0,    '#07080D');
+  sky.addColorStop(0.45, '#0A0F1E');
+  sky.addColorStop(0.72, '#0D1535');
+  sky.addColorStop(0.88, '#112050');
+  sky.addColorStop(1,    '#1A3A6E');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Rising glow at horizon: dawn light ──
+  const glowY = H * 0.72;
+  const glow  = ctx.createRadialGradient(W/2, glowY, 0, W/2, glowY, W * 0.55);
+  const pulse = 0.12 + Math.sin(t * 0.4) * 0.04;
+  glow.addColorStop(0,    `rgba(37,99,168,${pulse + 0.18})`);
+  glow.addColorStop(0.35, `rgba(26,58,110,${pulse})`);
+  glow.addColorStop(0.7,  `rgba(13,21,53,0.05)`);
+  glow.addColorStop(1,    'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Secondary warm center glow (gold touch) ──
+  const warmGlow = ctx.createRadialGradient(W/2, glowY, 0, W/2, glowY, W * 0.18);
+  warmGlow.addColorStop(0,   `rgba(200,169,110,${0.06 + Math.sin(t*0.3)*0.02})`);
+  warmGlow.addColorStop(0.5, 'rgba(200,169,110,0.02)');
+  warmGlow.addColorStop(1,   'transparent');
+  ctx.fillStyle = warmGlow;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Stars ──
+  stars.forEach(s => {
+    const twinkle = s.a * (0.5 + 0.5 * Math.sin(t * s.speed * 8 + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(180,210,240,${twinkle})`;
+    ctx.fill();
+  });
+
+  // ── Silhouette: mountain ridge ──
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  // left flat ground
+  ctx.lineTo(0, H * 0.82);
+  ctx.lineTo(W * 0.05, H * 0.80);
+  // distant hills
+  ctx.quadraticCurveTo(W * 0.12, H * 0.74, W * 0.18, H * 0.77);
+  ctx.quadraticCurveTo(W * 0.25, H * 0.70, W * 0.30, H * 0.72);
+  // main mountain peak left
+  ctx.quadraticCurveTo(W * 0.34, H * 0.58, W * 0.40, H * 0.54);
+  ctx.quadraticCurveTo(W * 0.46, H * 0.50, W * 0.50, H * 0.48);
+  // summit
+  ctx.quadraticCurveTo(W * 0.54, H * 0.50, W * 0.60, H * 0.55);
+  // right slope
+  ctx.quadraticCurveTo(W * 0.68, H * 0.62, W * 0.74, H * 0.68);
+  ctx.quadraticCurveTo(W * 0.82, H * 0.73, W * 0.88, H * 0.75);
+  ctx.quadraticCurveTo(W * 0.94, H * 0.78, W, H * 0.80);
+  ctx.lineTo(W, H);
+  ctx.closePath();
+
+  const mtn = ctx.createLinearGradient(0, H * 0.48, 0, H);
+  mtn.addColorStop(0, '#050709');
+  mtn.addColorStop(1, '#080B14');
+  ctx.fillStyle = mtn;
+  ctx.fill();
+
+  // ── Foreground: figure silhouette walking toward light ──
+  const figX = W * 0.50 + Math.sin(t * 0.15) * 0.5; // very subtle sway
+  const figY = H * 0.755;
+  const scale = H * 0.001;
+
+  ctx.save();
+  ctx.translate(figX, figY);
+
+  // body
+  ctx.beginPath();
+  ctx.moveTo(-4 * scale, 0);
+  ctx.lineTo(-5 * scale, -28 * scale);
+  ctx.lineTo(-2 * scale, -50 * scale);
+  ctx.lineTo(2  * scale, -50 * scale);
+  ctx.lineTo(5  * scale, -28 * scale);
+  ctx.lineTo(4  * scale, 0);
+  ctx.closePath();
+  ctx.fillStyle = '#030406';
+  ctx.fill();
+
+  // head
+  ctx.beginPath();
+  ctx.arc(0, -56 * scale, 7 * scale, 0, Math.PI * 2);
+  ctx.fillStyle = '#030406';
+  ctx.fill();
+
+  // walking staff
+  ctx.beginPath();
+  ctx.moveTo(6 * scale, -40 * scale);
+  ctx.lineTo(14 * scale, 2 * scale);
+  ctx.strokeStyle = '#030406';
+  ctx.lineWidth = 2 * scale;
+  ctx.stroke();
+
+  ctx.restore();
+
+  // ── Light beam from "above" touching the figure ──
+  const beamGrad = ctx.createLinearGradient(W/2, H * 0.05, W/2, figY - 60 * scale);
+  beamGrad.addColorStop(0,   'rgba(59,130,196,0)');
+  beamGrad.addColorStop(0.6, `rgba(59,130,196,${0.04 + Math.sin(t*0.5)*0.02})`);
+  beamGrad.addColorStop(1,   `rgba(147,197,232,${0.10 + Math.sin(t*0.5)*0.03})`);
+  ctx.beginPath();
+  ctx.moveTo(W/2 - 2, H * 0.05);
+  ctx.lineTo(W/2 - 30, figY - 60 * scale);
+  ctx.lineTo(W/2 + 30, figY - 60 * scale);
+  ctx.lineTo(W/2 + 2, H * 0.05);
+  ctx.closePath();
+  ctx.fillStyle = beamGrad;
+  ctx.fill();
+
+  // ── Floating light motes ──
+  if (Math.random() < 0.15) spawnParticle();
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.x  += p.vx;
+    p.y  += p.vy;
+    p.life -= 0.004;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(147,197,232,${p.a * p.life})`;
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', resize);
+resize();
+draw();
+
+// ── AMBIENT SOUND: Web Audio API — gentle wind & choir tone ──
+let audioCtx, masterGain, soundOn = false;
+const btn = document.getElementById('soundBtn');
+
+function buildAudio() {
+  audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 3);
+  masterGain.connect(audioCtx.destination);
+
+  // ── Wind: filtered noise ──
+  const bufSize = audioCtx.sampleRate * 4;
+  const buffer  = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data    = buffer.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop   = true;
+
+  const windFilter = audioCtx.createBiquadFilter();
+  windFilter.type            = 'bandpass';
+  windFilter.frequency.value = 320;
+  windFilter.Q.value         = 0.6;
+
+  const windGain = audioCtx.createGain();
+  windGain.gain.value = 0.18;
+
+  // slow LFO on wind volume
+  const windLFO = audioCtx.createOscillator();
+  windLFO.frequency.value = 0.07;
+  const windLFOGain = audioCtx.createGain();
+  windLFOGain.gain.value = 0.07;
+  windLFO.connect(windLFOGain);
+  windLFOGain.connect(windGain.gain);
+  windLFO.start();
+
+  noise.connect(windFilter);
+  windFilter.connect(windGain);
+  windGain.connect(masterGain);
+  noise.start();
+
+  // ── Birds: occasional soft chirp tones ──
+  function chirp(delay, freq, dur) {
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    const f = audioCtx.createBiquadFilter();
+    f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 8;
+    o.type = 'sine';
+    o.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+    o.frequency.linearRampToValueAtTime(freq * 1.08, audioCtx.currentTime + delay + dur * 0.4);
+    o.frequency.linearRampToValueAtTime(freq * 0.97, audioCtx.currentTime + delay + dur);
+    g.gain.setValueAtTime(0, audioCtx.currentTime + delay);
+    g.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + delay + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + delay + dur);
+    o.connect(f); f.connect(g); g.connect(masterGain);
+    o.start(audioCtx.currentTime + delay);
+    o.stop(audioCtx.currentTime + delay + dur + 0.1);
+  }
+
+  function schedBirds() {
+    const patterns = [
+      [0, 2800, 0.12], [0.18, 3100, 0.09], [0.4, 2600, 0.14],
+      [1.2, 3400, 0.10], [1.35, 3200, 0.08],
+      [3.5, 2900, 0.13], [3.7, 3000, 0.10],
+      [6.0, 2750, 0.11], [6.2, 3100, 0.09], [6.45, 2900, 0.12]
+    ];
+    patterns.forEach(([d, f, dur]) => chirp(d, f, dur));
+    setTimeout(schedBirds, 9000 + Math.random() * 5000);
+  }
+  schedBirds();
+
+  // ── Choir pad: slow-attack ambient tone cluster ──
+  const choirNotes = [174.6, 220, 261.6, 329.6]; // F3 A3 C4 E4 — soft major
+  choirNotes.forEach((freq, i) => {
+    const o  = audioCtx.createOscillator();
+    const g  = audioCtx.createGain();
+    const lp = audioCtx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 800;
+
+    o.type = 'sine';
+    o.frequency.value = freq;
+    // slight detune per partial
+    o.detune.value = (i % 2 === 0 ? 1 : -1) * (i * 3 + 2);
+
+    // slow vibrato
+    const vib = audioCtx.createOscillator();
+    const vibG = audioCtx.createGain();
+    vib.frequency.value = 4.5;
+    vibG.gain.value = 3;
+    vib.connect(vibG);
+    vibG.connect(o.frequency);
+    vib.start();
+
+    g.gain.value = 0.04;
+
+    // swell LFO
+    const swellLFO = audioCtx.createOscillator();
+    const swellG   = audioCtx.createGain();
+    swellLFO.frequency.value = 0.04 + i * 0.01;
+    swellG.gain.value = 0.025;
+    swellLFO.connect(swellG);
+    swellG.connect(g.gain);
+    swellLFO.start();
+
+    o.connect(lp); lp.connect(g); g.connect(masterGain);
+    o.start();
+  });
+}
+
+function toggleSound() {
+  if (!audioCtx) {
+    buildAudio();
+    soundOn = true;
+    btn.textContent = '🔊';
+    btn.title = 'Silenciar';
+  } else if (soundOn) {
+    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.5);
+    soundOn = false;
+    btn.textContent = '🔇';
+    btn.title = 'Activar sonido';
+  } else {
+    masterGain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 1.5);
+    soundOn = true;
+    btn.textContent = '🔊';
+    btn.title = 'Silenciar';
+  }
+}
+
+btn.addEventListener('click', toggleSound);
+</script>
+</body>
+</html>
